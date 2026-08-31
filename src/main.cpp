@@ -1,29 +1,12 @@
-#include <iostream>
-#include <cmath>
 #include <cstdint>
 #include "raylib.h"
 
-#include <unordered_map>
 #include <string>
 
 #include "board.h"
+#include "render.h"
 
 using namespace std;
-
-std::unordered_map<std::string, Rectangle> pieceTextureLookup = {
-    {"w-king", {0, 0, 480, 480}},
-    {"w-queen", {480, 0, 480, 480}},
-    {"w-rook", {960, 0, 480, 480}},
-    {"w-knight", {1440, 0, 480, 480}},
-    {"w-bishop", {1920, 0, 480, 480}},
-    {"w-pawn", {2400, 0, 480, 480}},
-    {"b-king", {0, 480, 480, 480}},
-    {"b-queen", {480, 480, 480, 480}},
-    {"b-rook", {960, 480, 480, 480}},
-    {"b-knight", {1440, 480, 480, 480}},
-    {"b-bishop", {1920, 480, 480, 480}},
-    {"b-pawn", {2400, 480, 480, 480}},
-};
 
 
 void resetToStartingPosition(Board& board) {
@@ -45,93 +28,54 @@ void resetToStartingPosition(Board& board) {
 
     // State Variables
     board.turn = true;          // True for White to move
-    board.moveCounter = 0;      // Reset half-move / full-move clock
+    board.moveCounter = 0;      // Reset half-move
     board.epSquare = -1;        // No en passant square available (-1 or 64)
     board.castling = 0xF;       // 1111 in binary (Both sides have King & Queen rights)
 }
 
+const int screenWidth = 800;
+const int screenHeight = 800;
+const int squareSize = screenWidth/8;
 
-void drawCheckerboard(int posX, int posY,
-                      int squareSize,
-                      int width, int height,
-                      Color colorOne, Color colorTwo)
-{
-    bool usingColorOne = false;
+Texture2D pieceTextures;
 
-    for (int y = 0; y < height; y++) {
+Board board;
+Renderer renderer;
 
-        for (int x = 0; x < width; x++) {
-            DrawRectangle(posX + (x * squareSize), posY + (y * squareSize), squareSize, squareSize, usingColorOne ? colorOne : colorTwo);
-
-            usingColorOne = !usingColorOne;
-        }
-
-        usingColorOne = !usingColorOne;
-    }
-}
-
-void drawPiece(int posX, int posY, Texture2D texture, int size, string piece) {
-    const Rectangle rect = pieceTextureLookup[piece];
-    DrawTexturePro(texture, rect, {(float)posX, (float)posY, (float)size, (float)size}, {0,0}, 0, WHITE);
-}
-
-void drawPieceBitboard(uint64_t board, Texture2D texture, int squareSize, string piece) {
-    for (int square = 0; square < 64; square++) {
-        if ((board & (1ULL << square)) != 0) {
-            int x = square % 8;
-            int y = square / 8;
-
-            drawPiece(x*squareSize, y*squareSize, texture, squareSize, piece);
-        }
-    }
-}
-
-void drawPieces(Board board, Texture2D texture, int squareSize){
-    drawPieceBitboard(board.piece[0], texture, squareSize, "w-pawn");
-    drawPieceBitboard(board.piece[1], texture, squareSize, "w-knight");
-    drawPieceBitboard(board.piece[2], texture, squareSize, "w-bishop");
-    drawPieceBitboard(board.piece[3], texture, squareSize, "w-rook");
-    drawPieceBitboard(board.piece[4], texture, squareSize, "w-queen");
-    drawPieceBitboard(board.piece[5], texture, squareSize, "w-king");
-
-    drawPieceBitboard(board.piece[6], texture, squareSize, "b-pawn");
-    drawPieceBitboard(board.piece[7], texture, squareSize, "b-knight");
-    drawPieceBitboard(board.piece[8], texture, squareSize, "b-bishop");
-    drawPieceBitboard(board.piece[9], texture, squareSize, "b-rook");
-    drawPieceBitboard(board.piece[10], texture, squareSize, "b-queen");
-    drawPieceBitboard(board.piece[11], texture, squareSize, "b-king");
-}
-
-int main() {
-
-    const int screenWidth = 800;
-    const int screenHeight = 800;
-    const int squareSize = screenWidth/8;
-
-    Board board;
+void init(){
     resetToStartingPosition(board);
 
     InitWindow(screenWidth, screenHeight, "Chess");
 
-    Texture2D pieceTextures = LoadTexture("../sprites/spritesheet.png");
+    pieceTextures = LoadTexture("../sprites/spritesheet.png");
     SetTextureFilter(pieceTextures, TEXTURE_FILTER_TRILINEAR);
     GenTextureMipmaps(&pieceTextures);
 
     SetTargetFPS(60);
+}
+
+void gameLoop() {
+    BeginDrawing();
+    ClearBackground(RAYWHITE);
+
+    renderer.drawCheckerboard(0, 0, squareSize, 8, 8, { 115, 149, 82, 255 }, { 235, 236, 208, 255 });
+    renderer.drawPieces(board, pieceTextures, squareSize);
+
+    EndDrawing();
+}
+
+int main() {
+
+    init();
 
     while (!WindowShouldClose())
     {
-        BeginDrawing();
-        ClearBackground(RAYWHITE);
-
-        drawCheckerboard(0, 0, squareSize, 8, 8, { 115, 149, 82, 255 }, { 235, 236, 208, 255 });
-        drawPieces(board, pieceTextures, squareSize);
-
-        EndDrawing();
+        gameLoop();
     }
 
     CloseWindow();
 
     return 0;
 }
-//g++ main.cpp -o game -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
+// g++ main.cpp render.cpp -o game -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
+
