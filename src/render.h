@@ -15,8 +15,8 @@ public:
     void drawCheckerboard(int posX, int posY,
                       int squareSize,
                       int width, int height,
-                      Color colorOne, Color colorTwo);
+                      Color colorOne, Color colorTwo, bool orientation);
     void drawPiece(int posX, int posY, Texture2D texture, int size, string piece);
-    void drawPieceBitboard(uint64_t board, Texture2D texture, int squareSize, string piece);
-    void drawPieces(const Board& board, Texture2D texture, int squareSize);
+    void drawPieceBitboard(uint64_t board, Texture2D texture, int squareSize, string piece, bool orientation);
+    void drawPieces(const Board& board, Texture2D texture, int squareSize, bool orientation);
 };

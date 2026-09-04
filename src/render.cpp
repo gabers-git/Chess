@@ -27,8 +27,10 @@ std::unordered_map<std::string, Rectangle> pieceTextureLookup = {
 void Renderer::drawCheckerboard(int posX, int posY,
                       int squareSize,
                       int width, int height,
-                      Color colorOne, Color colorTwo){
-    bool usingColorOne = false;
+                      Color colorOne, Color colorTwo, bool orientation){
+
+
+    bool usingColorOne = orientation ? false : true;
 
     for (int y = 0; y < height; y++) {
 
@@ -47,29 +49,29 @@ void Renderer::drawPiece(int posX, int posY, Texture2D texture, int size, string
     DrawTexturePro(texture, rect, {(float)posX, (float)posY, (float)size, (float)size}, {0,0}, 0, WHITE);
 }
 
-void Renderer::drawPieceBitboard(uint64_t board, Texture2D texture, int squareSize, string piece) {
+void Renderer::drawPieceBitboard(uint64_t board, Texture2D texture, int squareSize, string piece, bool orientation) {
     for (int square = 0; square < 64; square++) {
         if ((board & (1ULL << square)) != 0) {
-            int x = square % 8;
-            int y = square / 8;
+            int x = orientation ? 7 - (square % 8) : square % 8;
+            int y = orientation ? 7 - (square / 8) : square / 8;
 
             drawPiece(x*squareSize, y*squareSize, texture, squareSize, piece);
         }
     }
 }
-void Renderer::drawPieces(const Board& board, Texture2D texture, int squareSize){
-    drawPieceBitboard(board.piece[0], texture, squareSize, "w-pawn");
-    drawPieceBitboard(board.piece[1], texture, squareSize, "w-knight");
-    drawPieceBitboard(board.piece[2], texture, squareSize, "w-bishop");
-    drawPieceBitboard(board.piece[3], texture, squareSize, "w-rook");
-    drawPieceBitboard(board.piece[4], texture, squareSize, "w-queen");
-    drawPieceBitboard(board.piece[5], texture, squareSize, "w-king");
+void Renderer::drawPieces(const Board& board, Texture2D texture, int squareSize, bool orientation){
+    drawPieceBitboard(board.piece[0], texture, squareSize, "w-pawn", orientation);
+    drawPieceBitboard(board.piece[1], texture, squareSize, "w-knight", orientation);
+    drawPieceBitboard(board.piece[2], texture, squareSize, "w-bishop", orientation);
+    drawPieceBitboard(board.piece[3], texture, squareSize, "w-rook", orientation);
+    drawPieceBitboard(board.piece[4], texture, squareSize, "w-queen", orientation);
+    drawPieceBitboard(board.piece[5], texture, squareSize, "w-king", orientation);
 
-    drawPieceBitboard(board.piece[6], texture, squareSize, "b-pawn");
-    drawPieceBitboard(board.piece[7], texture, squareSize, "b-knight");
-    drawPieceBitboard(board.piece[8], texture, squareSize, "b-bishop");
-    drawPieceBitboard(board.piece[9], texture, squareSize, "b-rook");
-    drawPieceBitboard(board.piece[10], texture, squareSize, "b-queen");
-    drawPieceBitboard(board.piece[11], texture, squareSize, "b-king");
+    drawPieceBitboard(board.piece[6], texture, squareSize, "b-pawn", orientation);
+    drawPieceBitboard(board.piece[7], texture, squareSize, "b-knight", orientation);
+    drawPieceBitboard(board.piece[8], texture, squareSize, "b-bishop", orientation);
+    drawPieceBitboard(board.piece[9], texture, squareSize, "b-rook", orientation);
+    drawPieceBitboard(board.piece[10], texture, squareSize, "b-queen", orientation);
+    drawPieceBitboard(board.piece[11], texture, squareSize, "b-king", orientation);
 }
 

@@ -5,6 +5,7 @@
 
 #include "board.h"
 #include "render.h"
+#include "interact.h"
 
 using namespace std;
 
@@ -37,10 +38,13 @@ const int screenWidth = 800;
 const int screenHeight = 800;
 const int squareSize = screenWidth/8;
 
+const bool orientation = true;
+
 Texture2D pieceTextures;
 
 Board board;
 Renderer renderer;
+Interact interact;
 
 void init(){
     resetToStartingPosition(board);
@@ -58,8 +62,12 @@ void gameLoop() {
     BeginDrawing();
     ClearBackground(RAYWHITE);
 
-    renderer.drawCheckerboard(0, 0, squareSize, 8, 8, { 115, 149, 82, 255 }, { 235, 236, 208, 255 });
-    renderer.drawPieces(board, pieceTextures, squareSize);
+    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+        interact.onClick((float)screenWidth, orientation);
+    }
+
+    renderer.drawCheckerboard(0, 0, squareSize, 8, 8, { 115, 149, 82, 255 }, { 235, 236, 208, 255 }, orientation);
+    renderer.drawPieces(board, pieceTextures, squareSize, orientation);
 
     EndDrawing();
 }
@@ -77,5 +85,5 @@ int main() {
 
     return 0;
 }
-// g++ main.cpp render.cpp -o game -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
+// g++ main.cpp render.cpp interact.cpp-o game -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
 
