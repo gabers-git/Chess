@@ -12,10 +12,18 @@ using namespace std;
 class Renderer {
 
 public:
-    void drawCheckerboard(int posX, int posY,
-                      int squareSize,
-                      int width, int height,
-                      Color colorOne, Color colorTwo, bool orientation);
+    struct CheckerboardParams {
+        int posX;
+        int posY;
+        int squareSize;
+        int width;
+        int height;
+        Color colorOne;
+        Color colorTwo;
+        bool orientation;
+    };
+
+    void drawCheckerboard(const CheckerboardParams&);
     void drawPiece(int posX, int posY, Texture2D texture, int size, string piece);
     void drawPieceBitboard(uint64_t board, Texture2D texture, int squareSize, string piece, bool orientation);
     void drawPieces(const Board& board, Texture2D texture, int squareSize, bool orientation);

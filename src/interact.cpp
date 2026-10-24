@@ -1,5 +1,4 @@
 #include <cmath>
-#include <iostream>
 #include "raylib.h"
 
 #include "interact.h"
@@ -14,6 +13,4 @@ Vector2 screenToBoard(Vector2 screen, float screenSize, bool orientation) {
 void Interact::onClick(float screenSize, bool orientation) {
     const Vector2 mousePos = GetMousePosition();
     const Vector2 boardPos = screenToBoard(mousePos, screenSize, orientation);
-
-
 }

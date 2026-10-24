@@ -9,7 +9,9 @@
 #include "board.h"
 #include "render.h"
 
-std::unordered_map<std::string, Rectangle> pieceTextureLookup = {
+using namespace std;
+
+unordered_map<string, Rectangle> pieceTextureByName = {
     {"w-king", {0, 0, 480, 480}},
     {"w-queen", {480, 0, 480, 480}},
     {"w-rook", {960, 0, 480, 480}},
@@ -24,18 +26,15 @@ std::unordered_map<std::string, Rectangle> pieceTextureLookup = {
     {"b-pawn", {2400, 480, 480, 480}},
 };
 
-void Renderer::drawCheckerboard(int posX, int posY,
-                      int squareSize,
-                      int width, int height,
-                      Color colorOne, Color colorTwo, bool orientation){
+void Renderer::drawCheckerboard(const CheckerboardParams& params){
 
 
-    bool usingColorOne = orientation ? false : true;
+    bool usingColorOne = params.orientation ? false : true;
 
-    for (int y = 0; y < height; y++) {
+    for (int y = 0; y < params.height; y++) {
 
-        for (int x = 0; x < width; x++) {
-            DrawRectangle(posX + (x * squareSize), posY + (y * squareSize), squareSize, squareSize, usingColorOne ? colorOne : colorTwo);
+        for (int x = 0; x < params.width; x++) {
+            DrawRectangle(params.posX + (x * params.squareSize), params.posY + (y * params.squareSize), params.squareSize, params.squareSize, usingColorOne ? params.colorOne : params.colorTwo);
 
             usingColorOne = !usingColorOne;
         }
@@ -45,7 +44,7 @@ void Renderer::drawCheckerboard(int posX, int posY,
                       }
 
 void Renderer::drawPiece(int posX, int posY, Texture2D texture, int size, string piece) {
-    const Rectangle rect = pieceTextureLookup[piece];
+    const Rectangle rect = pieceTextureByName[piece];
     DrawTexturePro(texture, rect, {(float)posX, (float)posY, (float)size, (float)size}, {0,0}, 0, WHITE);
 }
 
